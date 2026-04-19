@@ -1,0 +1,6 @@
+venv
+.venv
+data
+train_data
+__pycache__
+sampdata*

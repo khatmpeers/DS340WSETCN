@@ -1,0 +1,318 @@
+Using directory mode.
+Loading train trips...
+Loaded 120 train trip CSVs.
+Loading validation trips...
+Loaded 30 validation trip CSVs.
+Loading test trips...
+Loaded 50 test trip CSVs.
+Validation enabled: True
+Train trip count: 120
+Val trip count: 30
+Test trip count: 50
+Train raw rows: 240000
+Val raw rows: 60000
+Test raw rows: 100000
+max_rows_per_trip: 2000
+Selected feature columns:
+  - traction_tractionForce
+  - odometry_vehicleSpeed
+  - odometry_wheelSpeed_fr
+  - odometry_wheelSpeed_ml
+  - odometry_wheelSpeed_mr
+  - odometry_wheelSpeed_rr
+  - odometry_wheelSpeed_rl
+  - traction_brakePressure
+train: processed trips 1/120 - cumulative windows: 1990
+train: processed trips 2/120 - cumulative windows: 3980
+train: processed trips 3/120 - cumulative windows: 5970
+train: processed trips 4/120 - cumulative windows: 7960
+train: processed trips 5/120 - cumulative windows: 9950
+train: processed trips 6/120 - cumulative windows: 11940
+train: processed trips 7/120 - cumulative windows: 13930
+train: processed trips 8/120 - cumulative windows: 15920
+train: processed trips 9/120 - cumulative windows: 17910
+train: processed trips 10/120 - cumulative windows: 19900
+train: processed trips 11/120 - cumulative windows: 21890
+train: processed trips 12/120 - cumulative windows: 23880
+train: processed trips 13/120 - cumulative windows: 25870
+train: processed trips 14/120 - cumulative windows: 27860
+train: processed trips 15/120 - cumulative windows: 29850
+train: processed trips 16/120 - cumulative windows: 31840
+train: processed trips 17/120 - cumulative windows: 33830
+train: processed trips 18/120 - cumulative windows: 35820
+train: processed trips 19/120 - cumulative windows: 37810
+train: processed trips 20/120 - cumulative windows: 39800
+train: processed trips 21/120 - cumulative windows: 41790
+train: processed trips 22/120 - cumulative windows: 43780
+train: processed trips 23/120 - cumulative windows: 45770
+train: processed trips 24/120 - cumulative windows: 47760
+train: processed trips 25/120 - cumulative windows: 49750
+train: processed trips 26/120 - cumulative windows: 51740
+train: processed trips 27/120 - cumulative windows: 53730
+train: processed trips 28/120 - cumulative windows: 55720
+train: processed trips 29/120 - cumulative windows: 57710
+train: processed trips 30/120 - cumulative windows: 59700
+train: processed trips 31/120 - cumulative windows: 61690
+train: processed trips 32/120 - cumulative windows: 63680
+train: processed trips 33/120 - cumulative windows: 65670
+train: processed trips 34/120 - cumulative windows: 67660
+train: processed trips 35/120 - cumulative windows: 69650
+train: processed trips 36/120 - cumulative windows: 71640
+train: processed trips 37/120 - cumulative windows: 73630
+train: processed trips 38/120 - cumulative windows: 75620
+train: processed trips 39/120 - cumulative windows: 77610
+train: processed trips 40/120 - cumulative windows: 79600
+train: processed trips 41/120 - cumulative windows: 81590
+train: processed trips 42/120 - cumulative windows: 83580
+train: processed trips 43/120 - cumulative windows: 85570
+train: processed trips 44/120 - cumulative windows: 87560
+train: processed trips 45/120 - cumulative windows: 89550
+train: processed trips 46/120 - cumulative windows: 91540
+train: processed trips 47/120 - cumulative windows: 93530
+train: processed trips 48/120 - cumulative windows: 95520
+train: processed trips 49/120 - cumulative windows: 97510
+train: processed trips 50/120 - cumulative windows: 99500
+train: processed trips 51/120 - cumulative windows: 101490
+train: processed trips 52/120 - cumulative windows: 103480
+train: processed trips 53/120 - cumulative windows: 105470
+train: processed trips 54/120 - cumulative windows: 107460
+train: processed trips 55/120 - cumulative windows: 109450
+train: processed trips 56/120 - cumulative windows: 111440
+train: processed trips 57/120 - cumulative windows: 113430
+train: processed trips 58/120 - cumulative windows: 115420
+train: processed trips 59/120 - cumulative windows: 117410
+train: processed trips 60/120 - cumulative windows: 119400
+train: processed trips 61/120 - cumulative windows: 121390
+train: processed trips 62/120 - cumulative windows: 123380
+train: processed trips 63/120 - cumulative windows: 125370
+train: processed trips 64/120 - cumulative windows: 127360
+train: processed trips 65/120 - cumulative windows: 129350
+train: processed trips 66/120 - cumulative windows: 131340
+train: processed trips 67/120 - cumulative windows: 133330
+train: processed trips 68/120 - cumulative windows: 135320
+train: processed trips 69/120 - cumulative windows: 137310
+train: processed trips 70/120 - cumulative windows: 139300
+train: processed trips 71/120 - cumulative windows: 141290
+train: processed trips 72/120 - cumulative windows: 143280
+train: processed trips 73/120 - cumulative windows: 145270
+train: processed trips 74/120 - cumulative windows: 147260
+train: processed trips 75/120 - cumulative windows: 149250
+train: processed trips 76/120 - cumulative windows: 151240
+train: processed trips 77/120 - cumulative windows: 153230
+train: processed trips 78/120 - cumulative windows: 155220
+train: processed trips 79/120 - cumulative windows: 157210
+train: processed trips 80/120 - cumulative windows: 159200
+train: processed trips 81/120 - cumulative windows: 161190
+train: processed trips 82/120 - cumulative windows: 163180
+train: processed trips 83/120 - cumulative windows: 165170
+train: processed trips 84/120 - cumulative windows: 167160
+train: processed trips 85/120 - cumulative windows: 169150
+train: processed trips 86/120 - cumulative windows: 171140
+train: processed trips 87/120 - cumulative windows: 173130
+train: processed trips 88/120 - cumulative windows: 175120
+train: processed trips 89/120 - cumulative windows: 177110
+train: processed trips 90/120 - cumulative windows: 179100
+train: processed trips 91/120 - cumulative windows: 181090
+train: processed trips 92/120 - cumulative windows: 183080
+train: processed trips 93/120 - cumulative windows: 185070
+train: processed trips 94/120 - cumulative windows: 187060
+train: processed trips 95/120 - cumulative windows: 189050
+train: processed trips 96/120 - cumulative windows: 191040
+train: processed trips 97/120 - cumulative windows: 193030
+train: processed trips 98/120 - cumulative windows: 195020
+train: processed trips 99/120 - cumulative windows: 197010
+train: processed trips 100/120 - cumulative windows: 199000
+train: processed trips 101/120 - cumulative windows: 200990
+train: processed trips 102/120 - cumulative windows: 202980
+train: processed trips 103/120 - cumulative windows: 204970
+train: processed trips 104/120 - cumulative windows: 206960
+train: processed trips 105/120 - cumulative windows: 208950
+train: processed trips 106/120 - cumulative windows: 210940
+train: processed trips 107/120 - cumulative windows: 212930
+train: processed trips 108/120 - cumulative windows: 214920
+train: processed trips 109/120 - cumulative windows: 216910
+train: processed trips 110/120 - cumulative windows: 218900
+train: processed trips 111/120 - cumulative windows: 220890
+train: processed trips 112/120 - cumulative windows: 222880
+train: processed trips 113/120 - cumulative windows: 224870
+train: processed trips 114/120 - cumulative windows: 226860
+train: processed trips 115/120 - cumulative windows: 228850
+train: processed trips 116/120 - cumulative windows: 230840
+train: processed trips 117/120 - cumulative windows: 232830
+train: processed trips 118/120 - cumulative windows: 234820
+train: processed trips 119/120 - cumulative windows: 236810
+train: processed trips 120/120 - cumulative windows: 238800
+val: processed trips 1/30 - cumulative windows: 1990
+val: processed trips 2/30 - cumulative windows: 3980
+val: processed trips 3/30 - cumulative windows: 5970
+val: processed trips 4/30 - cumulative windows: 7960
+val: processed trips 5/30 - cumulative windows: 9950
+val: processed trips 6/30 - cumulative windows: 11940
+val: processed trips 7/30 - cumulative windows: 13930
+val: processed trips 8/30 - cumulative windows: 15920
+val: processed trips 9/30 - cumulative windows: 17910
+val: processed trips 10/30 - cumulative windows: 19900
+/Users/pranav/Projects/Professional/College/DS340W/SETCN/venv/lib/python3.10/site-packages/torch/nn/utils/weight_norm.py:28: UserWarning: torch.nn.utils.weight_norm is deprecated in favor of torch.nn.utils.parametrizations.weight_norm.
+  warnings.warn("torch.nn.utils.weight_norm is deprecated in favor of torch.nn.utils.parametrizations.weight_norm.")
+val: processed trips 11/30 - cumulative windows: 21890
+val: processed trips 12/30 - cumulative windows: 23880
+val: processed trips 13/30 - cumulative windows: 25870
+val: processed trips 14/30 - cumulative windows: 27860
+val: processed trips 15/30 - cumulative windows: 29850
+val: processed trips 16/30 - cumulative windows: 31840
+val: processed trips 17/30 - cumulative windows: 33830
+val: processed trips 18/30 - cumulative windows: 35820
+val: processed trips 19/30 - cumulative windows: 37810
+val: processed trips 20/30 - cumulative windows: 39800
+val: processed trips 21/30 - cumulative windows: 41790
+val: processed trips 22/30 - cumulative windows: 43780
+val: processed trips 23/30 - cumulative windows: 45770
+val: processed trips 24/30 - cumulative windows: 47760
+val: processed trips 25/30 - cumulative windows: 49750
+val: processed trips 26/30 - cumulative windows: 51740
+val: processed trips 27/30 - cumulative windows: 53730
+val: processed trips 28/30 - cumulative windows: 55720
+val: processed trips 29/30 - cumulative windows: 57710
+val: processed trips 30/30 - cumulative windows: 59700
+test: processed trips 1/50 - cumulative windows: 1990
+test: processed trips 2/50 - cumulative windows: 3980
+test: processed trips 3/50 - cumulative windows: 5970
+test: processed trips 4/50 - cumulative windows: 7960
+test: processed trips 5/50 - cumulative windows: 9950
+test: processed trips 6/50 - cumulative windows: 11940
+test: processed trips 7/50 - cumulative windows: 13930
+test: processed trips 8/50 - cumulative windows: 15920
+test: processed trips 9/50 - cumulative windows: 17910
+test: processed trips 10/50 - cumulative windows: 19900
+test: processed trips 11/50 - cumulative windows: 21890
+test: processed trips 12/50 - cumulative windows: 23880
+test: processed trips 13/50 - cumulative windows: 25870
+test: processed trips 14/50 - cumulative windows: 27860
+test: processed trips 15/50 - cumulative windows: 29850
+test: processed trips 16/50 - cumulative windows: 31840
+test: processed trips 17/50 - cumulative windows: 33830
+test: processed trips 18/50 - cumulative windows: 35820
+test: processed trips 19/50 - cumulative windows: 37810
+test: processed trips 20/50 - cumulative windows: 39800
+test: processed trips 21/50 - cumulative windows: 41790
+test: processed trips 22/50 - cumulative windows: 43780
+test: processed trips 23/50 - cumulative windows: 45770
+test: processed trips 24/50 - cumulative windows: 47760
+test: processed trips 25/50 - cumulative windows: 49750
+test: processed trips 26/50 - cumulative windows: 51740
+test: processed trips 27/50 - cumulative windows: 53730
+test: processed trips 28/50 - cumulative windows: 55720
+test: processed trips 29/50 - cumulative windows: 57710
+test: processed trips 30/50 - cumulative windows: 59700
+test: processed trips 31/50 - cumulative windows: 61690
+test: processed trips 32/50 - cumulative windows: 63680
+test: processed trips 33/50 - cumulative windows: 65670
+test: processed trips 34/50 - cumulative windows: 67660
+test: processed trips 35/50 - cumulative windows: 69650
+test: processed trips 36/50 - cumulative windows: 71640
+test: processed trips 37/50 - cumulative windows: 73630
+test: processed trips 38/50 - cumulative windows: 75620
+test: processed trips 39/50 - cumulative windows: 77610
+test: processed trips 40/50 - cumulative windows: 79600
+test: processed trips 41/50 - cumulative windows: 81590
+test: processed trips 42/50 - cumulative windows: 83580
+test: processed trips 43/50 - cumulative windows: 85570
+test: processed trips 44/50 - cumulative windows: 87560
+test: processed trips 45/50 - cumulative windows: 89550
+test: processed trips 46/50 - cumulative windows: 91540
+test: processed trips 47/50 - cumulative windows: 93530
+test: processed trips 48/50 - cumulative windows: 95520
+test: processed trips 49/50 - cumulative windows: 97510
+test: processed trips 50/50 - cumulative windows: 99500
+Final train window count: 238800
+Final val window count: 59700
+Final test window count: 99500
+Using date column: time_unix
+  batch 500/3732 - running_train_mae: 38910.721992
+  batch 1000/3732 - running_train_mae: 35838.540693
+  batch 1500/3732 - running_train_mae: 34093.121426
+  batch 2000/3732 - running_train_mae: 32792.889293
+  batch 2500/3732 - running_train_mae: 31652.770985
+  batch 3000/3732 - running_train_mae: 30690.837630
+  batch 3500/3732 - running_train_mae: 29864.403300
+Epoch 1/10 - train_mae: 29530.587106 - val_mae: 23244.573007
+  batch 500/3732 - running_train_mae: 23841.584434
+  batch 1000/3732 - running_train_mae: 23556.227271
+  batch 1500/3732 - running_train_mae: 23342.157730
+  batch 2000/3732 - running_train_mae: 23216.100901
+  batch 2500/3732 - running_train_mae: 23176.806411
+  batch 3000/3732 - running_train_mae: 22985.103950
+  batch 3500/3732 - running_train_mae: 22841.703420
+Epoch 2/10 - train_mae: 22796.606897 - val_mae: 21232.207348
+  batch 500/3732 - running_train_mae: 21339.131092
+  batch 1000/3732 - running_train_mae: 21263.695803
+  batch 1500/3732 - running_train_mae: 21154.619497
+  batch 2000/3732 - running_train_mae: 21035.966176
+  batch 2500/3732 - running_train_mae: 21001.425845
+  batch 3000/3732 - running_train_mae: 20937.847992
+  batch 3500/3732 - running_train_mae: 20875.960936
+Epoch 3/10 - train_mae: 20777.694040 - val_mae: 18700.002394
+  batch 500/3732 - running_train_mae: 19774.928605
+  batch 1000/3732 - running_train_mae: 19738.927022
+  batch 1500/3732 - running_train_mae: 19700.630992
+  batch 2000/3732 - running_train_mae: 19711.718243
+  batch 2500/3732 - running_train_mae: 19593.576328
+  batch 3000/3732 - running_train_mae: 19564.946102
+  batch 3500/3732 - running_train_mae: 19491.519046
+Epoch 4/10 - train_mae: 19446.301369 - val_mae: 17555.969921
+  batch 500/3732 - running_train_mae: 18784.520164
+  batch 1000/3732 - running_train_mae: 18849.845418
+  batch 1500/3732 - running_train_mae: 18909.499202
+  batch 2000/3732 - running_train_mae: 18786.469240
+  batch 2500/3732 - running_train_mae: 18749.788306
+  batch 3000/3732 - running_train_mae: 18672.965003
+  batch 3500/3732 - running_train_mae: 18644.988568
+Epoch 5/10 - train_mae: 18620.087602 - val_mae: 17592.792682
+  batch 500/3732 - running_train_mae: 18391.178447
+  batch 1000/3732 - running_train_mae: 18310.370886
+  batch 1500/3732 - running_train_mae: 18263.876781
+  batch 2000/3732 - running_train_mae: 18256.168337
+  batch 2500/3732 - running_train_mae: 18150.415661
+  batch 3000/3732 - running_train_mae: 18148.424089
+  batch 3500/3732 - running_train_mae: 18111.905645
+Epoch 6/10 - train_mae: 18108.827008 - val_mae: 16754.565415
+  batch 500/3732 - running_train_mae: 18005.130543
+  batch 1000/3732 - running_train_mae: 17848.194289
+  batch 1500/3732 - running_train_mae: 17837.616081
+  batch 2000/3732 - running_train_mae: 17758.022597
+  batch 2500/3732 - running_train_mae: 17798.853891
+  batch 3000/3732 - running_train_mae: 17742.174297
+  batch 3500/3732 - running_train_mae: 17782.790452
+Epoch 7/10 - train_mae: 17808.740242 - val_mae: 16931.247204
+  batch 500/3732 - running_train_mae: 17518.343129
+  batch 1000/3732 - running_train_mae: 17580.373391
+  batch 1500/3732 - running_train_mae: 17637.909217
+  batch 2000/3732 - running_train_mae: 17613.096405
+  batch 2500/3732 - running_train_mae: 17578.759392
+  batch 3000/3732 - running_train_mae: 17701.416096
+  batch 3500/3732 - running_train_mae: 17678.424513
+Epoch 8/10 - train_mae: 17692.033590 - val_mae: 16497.090532
+  batch 500/3732 - running_train_mae: 17698.343818
+  batch 1000/3732 - running_train_mae: 17726.687254
+  batch 1500/3732 - running_train_mae: 17667.030867
+  batch 2000/3732 - running_train_mae: 17630.441634
+  batch 2500/3732 - running_train_mae: 17565.374674
+  batch 3000/3732 - running_train_mae: 17497.813179
+  batch 3500/3732 - running_train_mae: 17479.505645
+Epoch 9/10 - train_mae: 17438.255606 - val_mae: 15998.318109
+  batch 500/3732 - running_train_mae: 17303.548619
+  batch 1000/3732 - running_train_mae: 17300.727541
+  batch 1500/3732 - running_train_mae: 17218.391895
+  batch 2000/3732 - running_train_mae: 17185.214374
+  batch 2500/3732 - running_train_mae: 17192.912223
+  batch 3000/3732 - running_train_mae: 17303.693774
+  batch 3500/3732 - running_train_mae: 17418.563436
+Epoch 10/10 - train_mae: 17432.781577 - val_mae: 16444.623285
+Loaded best validation checkpoint from outputs/top8_setcn_10ep/best_model.pt
+Test MAE: 16963.630859
+Test RMSE: 27512.843750
+Test MAPE: 6221.482468
+Saved test predictions to outputs/top8_setcn_10ep/test_predictions.csv
+Saved metrics to outputs/top8_setcn_10ep/metrics.json
+Saved run config to outputs/top8_setcn_10ep/run_config.json
+Saved best checkpoint to outputs/top8_setcn_10ep/best_model.pt

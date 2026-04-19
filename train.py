@@ -16,9 +16,7 @@ from model import DILATIONS, HIDDEN_CHANNELS, KERNEL_SIZE, WINDOW_SIZE, build_mo
 
 
 TARGET_COLUMN = "electric_powerDemand"
-TRAIN_YEARS = (2019, 2020, 2021)
-TEST_YEARS = (2022,)
-COMMON_DATE_COLUMNS = ("date", "datetime", "timestamp", "time")
+COMMON_DATE_COLUMNS = ("date", "datetime", "timestamp", "time", "time_unix")
 DEFAULT_FEATURE_COLUMNS = [
     "gnss_latitude",
     "gnss_longitude",
@@ -83,7 +81,21 @@ def parse_args() -> argparse.Namespace:
         choices=["tcn", "tcn_r1", "tcn_r2", "tcn_r3", "setcn"],
         help="Model variant to train.",
     )
-    parser.add_argument("--data_path", required=True, help="Path to the input CSV file.")
+    parser.add_argument(
+        "--train_dir",
+        required=True,
+        help="Directory containing training trip CSV files.",
+    )
+    parser.add_argument(
+        "--val_dir",
+        default=None,
+        help="Optional directory containing validation trip CSV files.",
+    )
+    parser.add_argument(
+        "--test_dir",
+        required=True,
+        help="Directory containing testing trip CSV files.",
+    )
     parser.add_argument(
         "--target_column",
         default=TARGET_COLUMN,
@@ -100,6 +112,12 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Optional datetime column. If omitted, the script will try to detect one.",
     )
+    parser.add_argument(
+        "--max_rows_per_trip",
+        type=int,
+        default=None,
+        help="Optional cap on the number of rows to keep from each trip after sorting and filtering.",
+    )
     parser.add_argument("--epochs", required=True, type=int, help="Number of training epochs.")
     parser.add_argument("--batch_size", type=int, default=64, help="Batch size.")
     parser.add_argument("--lr", type=float, default=1e-4, help="Adam learning rate.")
@@ -108,12 +126,6 @@ def parse_args() -> argparse.Namespace:
         type=float,
         default=0.0,
         help="Dropout probability used inside TCN layers.",
-    )
-    parser.add_argument(
-        "--val_split",
-        type=float,
-        default=0.0,
-        help="Chronological validation split taken from the end of the 2019-2021 period.",
     )
     parser.add_argument(
         "--device",
@@ -125,6 +137,12 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=42,
         help="Optional random seed for reproducibility.",
+    )
+    parser.add_argument(
+        "--log_every_batches",
+        type=int,
+        default=1000,
+        help="Optional batch interval for intra-epoch progress logging.",
     )
     parser.add_argument(
         "--output_dir",
@@ -210,21 +228,29 @@ def select_feature_columns(
     return list(selected)
 
 
-def load_dataframe(
-    data_path: str,
+def load_trip_dataframe(
+    csv_path: Path,
     target_column: str,
     date_column: str | None,
     feature_columns: list[str] | None,
+    max_rows_per_trip: int | None,
 ) -> tuple[pd.DataFrame, str, list[str]]:
-    """Load, sort, and filter the input dataframe."""
-
-    dataframe = pd.read_csv(data_path)
+    dataframe = pd.read_csv(csv_path)
     resolved_date_column = date_column or infer_date_column(dataframe)
     dataframe = dataframe.copy()
-    dataframe[resolved_date_column] = pd.to_datetime(
-        dataframe[resolved_date_column],
-        errors="coerce",
-    )
+
+    if resolved_date_column == "time_unix":
+        dataframe[resolved_date_column] = pd.to_datetime(
+            dataframe[resolved_date_column],
+            unit="s",
+            errors="coerce",
+        )
+    else:
+        dataframe[resolved_date_column] = pd.to_datetime(
+            dataframe[resolved_date_column],
+            errors="coerce",
+        )
+
     dataframe = dataframe.dropna(subset=[resolved_date_column]).sort_values(resolved_date_column)
 
     selected_features = select_feature_columns(
@@ -236,64 +262,56 @@ def load_dataframe(
 
     required_columns = selected_features + [target_column]
     dataframe = dataframe.dropna(subset=required_columns).reset_index(drop=True)
+    if max_rows_per_trip is not None:
+        dataframe = dataframe.iloc[:max_rows_per_trip].copy()
     return dataframe, resolved_date_column, selected_features
 
 
-def split_by_year(
-    dataframe: pd.DataFrame,
-    date_column: str,
-) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Split data into paper-aligned training and test years."""
+def load_trips_from_directory(
+    directory_path: str,
+    target_column: str,
+    date_column: str | None,
+    feature_columns: list[str] | None,
+    max_rows_per_trip: int | None,
+) -> tuple[list[tuple[Path, pd.DataFrame]], str, list[str]]:
+    directory = Path(directory_path)
+    if not directory.exists():
+        raise ValueError(f"Directory does not exist: {directory}")
+    if not directory.is_dir():
+        raise ValueError(f"Expected a directory, got: {directory}")
 
-    years = dataframe[date_column].dt.year
-    train_df = dataframe[years.isin(TRAIN_YEARS)].copy()
-    test_df = dataframe[years.isin(TEST_YEARS)].copy()
+    csv_paths = sorted(directory.glob("*.csv"))
+    if not csv_paths:
+        raise ValueError(f"No CSV files found in directory: {directory}")
 
-    if train_df.empty:
-        raise ValueError("No rows found for training years 2019, 2020, and 2021.")
-    if test_df.empty:
-        raise ValueError("No rows found for testing year 2022.")
+    trips: list[tuple[Path, pd.DataFrame]] = []
+    resolved_date_column: str | None = None
+    selected_features: list[str] | None = None
 
-    return train_df, test_df
-
-
-def split_train_validation(
-    train_df: pd.DataFrame,
-    val_split: float,
-) -> tuple[pd.DataFrame, pd.DataFrame | None]:
-    """Optionally reserve the latest portion of the training years for validation."""
-
-    if not 0.0 <= val_split < 1.0:
-        raise ValueError("val_split must be between 0.0 and 1.0.")
-
-    if val_split == 0.0:
-        return train_df, None
-
-    split_index = int(len(train_df) * (1.0 - val_split))
-    if split_index <= WINDOW_SIZE or split_index >= len(train_df):
-        raise ValueError(
-            "val_split leaves too few rows for train or validation after chronological splitting."
+    for csv_path in csv_paths:
+        trip_df, trip_date_column, trip_features = load_trip_dataframe(
+            csv_path=csv_path,
+            target_column=target_column,
+            date_column=date_column,
+            feature_columns=feature_columns,
+            max_rows_per_trip=max_rows_per_trip,
         )
 
-    train_only_df = train_df.iloc[:split_index].copy()
-    val_df = train_df.iloc[split_index:].copy()
+        if resolved_date_column is None:
+            resolved_date_column = trip_date_column
+        elif resolved_date_column != trip_date_column:
+            raise ValueError(
+                f"Inconsistent date columns detected: '{resolved_date_column}' and '{trip_date_column}'."
+            )
 
-    if len(val_df) <= WINDOW_SIZE:
-        raise ValueError(
-            "Validation split must leave more than WINDOW_SIZE rows in the validation period."
-        )
+        if selected_features is None:
+            selected_features = trip_features
+        elif selected_features != trip_features:
+            raise ValueError("Inconsistent feature columns detected across trip CSV files.")
 
-    return train_only_df, val_df
+        trips.append((csv_path, trip_df))
 
-
-def fit_feature_scaler(train_df: pd.DataFrame, feature_columns: list[str]) -> StandardScaler:
-    """Fit standardization parameters on training features only."""
-
-    values = train_df[feature_columns].to_numpy(dtype=np.float32)
-    mean = values.mean(axis=0)
-    std = values.std(axis=0)
-    std = np.where(std == 0.0, 1.0, std)
-    return StandardScaler(mean=mean.astype(np.float32), std=std.astype(np.float32))
+    return trips, resolved_date_column or "", selected_features or []
 
 
 def create_sliding_windows(
@@ -326,6 +344,56 @@ def create_sliding_windows(
     )
 
 
+def create_sliding_windows_from_trips(
+    trips: list[tuple[Path, pd.DataFrame]],
+    feature_columns: list[str],
+    target_column: str,
+    split_name: str,
+    window_size: int = WINDOW_SIZE,
+) -> WindowedSeries:
+    all_inputs: list[np.ndarray] = []
+    all_targets: list[np.ndarray] = []
+
+    for trip_index, (_, trip_df) in enumerate(trips, start=1):
+        if len(trip_df) <= window_size:
+            continue
+
+        trip_windows = create_sliding_windows(
+            dataframe=trip_df,
+            feature_columns=feature_columns,
+            target_column=target_column,
+            window_size=window_size,
+        )
+        all_inputs.append(trip_windows.inputs)
+        all_targets.append(trip_windows.targets)
+
+        cumulative_windows = int(sum(array.shape[0] for array in all_inputs))
+        print(
+            f"{split_name}: processed trips {trip_index}/{len(trips)} - "
+            f"cumulative windows: {cumulative_windows}"
+        )
+
+    if not all_inputs:
+        raise ValueError(
+            f"No eligible sliding windows were produced for split '{split_name}' with window_size={window_size}."
+        )
+
+    return WindowedSeries(
+        inputs=np.concatenate(all_inputs, axis=0),
+        targets=np.concatenate(all_targets, axis=0),
+    )
+
+
+def fit_feature_scaler(train_df: pd.DataFrame, feature_columns: list[str]) -> StandardScaler:
+    """Fit standardization parameters on training features only."""
+
+    values = train_df[feature_columns].to_numpy(dtype=np.float32)
+    mean = values.mean(axis=0)
+    std = values.std(axis=0)
+    std = np.where(std == 0.0, 1.0, std)
+    return StandardScaler(mean=mean.astype(np.float32), std=std.astype(np.float32))
+
+
 def build_dataloader(data: WindowedSeries, batch_size: int, shuffle: bool) -> DataLoader:
     dataset = SlidingWindowDataset(data.inputs, data.targets)
     return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
@@ -341,12 +409,14 @@ def train_one_epoch(
     criterion: nn.Module,
     optimizer: torch.optim.Optimizer,
     device: torch.device,
+    log_every: int | None = None,
 ) -> float:
     model.train()
     total_loss = 0.0
     total_samples = 0
+    total_batches = len(loader)
 
-    for inputs, targets in loader:
+    for batch_index, (inputs, targets) in enumerate(loader, start=1):
         inputs = move_inputs_to_conv1d(inputs).to(device)
         targets = targets.to(device)
 
@@ -359,6 +429,13 @@ def train_one_epoch(
         batch_size = targets.size(0)
         total_loss += loss.item() * batch_size
         total_samples += batch_size
+
+        if log_every is not None and log_every > 0 and batch_index % log_every == 0:
+            running_mae = total_loss / total_samples
+            print(
+                f"  batch {batch_index}/{total_batches} - "
+                f"running_train_mae: {running_mae:.6f}"
+            )
 
     return total_loss / total_samples
 
@@ -457,9 +534,13 @@ def build_run_config(
     args: argparse.Namespace,
     feature_columns: list[str],
     date_column: str,
+    has_validation: bool,
 ) -> dict:
     return {
         "model": args.model,
+        "train_dir": args.train_dir,
+        "val_dir": args.val_dir,
+        "test_dir": args.test_dir,
         "feature_columns": feature_columns,
         "window_size": WINDOW_SIZE,
         "dilations": list(DILATIONS),
@@ -469,11 +550,11 @@ def build_run_config(
         "lr": args.lr,
         "batch_size": args.batch_size,
         "epochs": args.epochs,
+        "max_rows_per_trip": args.max_rows_per_trip,
+        "log_every_batches": args.log_every_batches,
         "target_column": args.target_column,
         "date_column": date_column,
-        "val_split": args.val_split,
-        "train_years": list(TRAIN_YEARS),
-        "test_years": list(TEST_YEARS),
+        "has_validation_dir": has_validation,
         "plain_tcn_assumption": (
             "The plain tcn variant uses simpler non-residual layers, while "
             "tcn_r1/tcn_r2/tcn_r3/setcn use the deeper residual block structure."
@@ -492,30 +573,110 @@ def main() -> None:
     args = parse_args()
     set_seed(args.seed)
     output_paths = resolve_output_paths(args)
-
     device = resolve_device(args.device)
-    dataframe, date_column, feature_columns = load_dataframe(
-        data_path=args.data_path,
+
+    print("Using directory mode.")
+
+    print("Loading train trips...")
+    train_trips, date_column, feature_columns = load_trips_from_directory(
+        directory_path=args.train_dir,
         target_column=args.target_column,
         date_column=args.date_column,
         feature_columns=args.feature_columns,
+        max_rows_per_trip=args.max_rows_per_trip,
     )
+    print(f"Loaded {len(train_trips)} train trip CSVs.")
 
-    train_df, test_df = split_by_year(dataframe, date_column)
-    train_only_df, val_df = split_train_validation(train_df, args.val_split)
+    val_trips: list[tuple[Path, pd.DataFrame]] | None = None
+    if args.val_dir is not None and Path(args.val_dir).exists():
+        print("Loading validation trips...")
+        val_trips, val_date_column, val_features = load_trips_from_directory(
+            directory_path=args.val_dir,
+            target_column=args.target_column,
+            date_column=date_column,
+            feature_columns=feature_columns,
+            max_rows_per_trip=args.max_rows_per_trip,
+        )
+        if val_date_column != date_column:
+            raise ValueError("Validation directory resolved a different date column.")
+        if val_features != feature_columns:
+            raise ValueError("Validation directory resolved different feature columns.")
+        print(f"Loaded {len(val_trips)} validation trip CSVs.")
 
-    scaler = fit_feature_scaler(train_only_df, feature_columns)
-    scaled_train_df = scaler.transform(train_only_df, feature_columns)
-    scaled_test_df = scaler.transform(test_df, feature_columns)
-    scaled_val_df = scaler.transform(val_df, feature_columns) if val_df is not None else None
+    print("Loading test trips...")
+    test_trips, test_date_column, test_features = load_trips_from_directory(
+        directory_path=args.test_dir,
+        target_column=args.target_column,
+        date_column=date_column,
+        feature_columns=feature_columns,
+        max_rows_per_trip=args.max_rows_per_trip,
+    )
+    if test_date_column != date_column:
+        raise ValueError("Test directory resolved a different date column.")
+    if test_features != feature_columns:
+        raise ValueError("Test directory resolved different feature columns.")
+    print(f"Loaded {len(test_trips)} test trip CSVs.")
 
-    train_data = create_sliding_windows(scaled_train_df, feature_columns, args.target_column)
-    test_data = create_sliding_windows(scaled_test_df, feature_columns, args.target_column)
-    val_data = (
-        create_sliding_windows(scaled_val_df, feature_columns, args.target_column)
-        if scaled_val_df is not None
+    print(f"Validation enabled: {val_trips is not None}")
+    print(f"Train trip count: {len(train_trips)}")
+    print(f"Val trip count: {len(val_trips) if val_trips is not None else 0}")
+    print(f"Test trip count: {len(test_trips)}")
+    print(f"Train raw rows: {sum(len(trip_df) for _, trip_df in train_trips)}")
+    print(f"Val raw rows: {sum(len(trip_df) for _, trip_df in val_trips) if val_trips is not None else 0}")
+    print(f"Test raw rows: {sum(len(trip_df) for _, trip_df in test_trips)}")
+    if args.max_rows_per_trip is not None:
+        print(f"max_rows_per_trip: {args.max_rows_per_trip}")
+    print("Selected feature columns:")
+    for column in feature_columns:
+        print(f"  - {column}")
+
+    scaler_frames = [trip_df for _, trip_df in train_trips]
+    scaler_train_df = pd.concat(scaler_frames, ignore_index=True)
+    scaler = fit_feature_scaler(scaler_train_df, feature_columns)
+
+    scaled_train_trips = [
+        (trip_path, scaler.transform(trip_df, feature_columns))
+        for trip_path, trip_df in train_trips
+    ]
+    scaled_val_trips = (
+        [
+            (trip_path, scaler.transform(trip_df, feature_columns))
+            for trip_path, trip_df in val_trips
+        ]
+        if val_trips is not None
         else None
     )
+    scaled_test_trips = [
+        (trip_path, scaler.transform(trip_df, feature_columns))
+        for trip_path, trip_df in test_trips
+    ]
+
+    train_data = create_sliding_windows_from_trips(
+        trips=scaled_train_trips,
+        feature_columns=feature_columns,
+        target_column=args.target_column,
+        split_name="train",
+    )
+    val_data = (
+        create_sliding_windows_from_trips(
+            trips=scaled_val_trips,
+            feature_columns=feature_columns,
+            target_column=args.target_column,
+            split_name="val",
+        )
+        if scaled_val_trips is not None
+        else None
+    )
+    test_data = create_sliding_windows_from_trips(
+        trips=scaled_test_trips,
+        feature_columns=feature_columns,
+        target_column=args.target_column,
+        split_name="test",
+    )
+
+    print(f"Final train window count: {len(train_data.targets)}")
+    print(f"Final val window count: {len(val_data.targets) if val_data is not None else 0}")
+    print(f"Final test window count: {len(test_data.targets)}")
 
     train_loader = build_dataloader(train_data, batch_size=args.batch_size, shuffle=True)
     test_loader = build_dataloader(test_data, batch_size=args.batch_size, shuffle=False)
@@ -534,15 +695,19 @@ def main() -> None:
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
     print(f"Using date column: {date_column}")
-    print("Using feature columns:")
-    for column in feature_columns:
-        print(f"  - {column}")
 
     best_val_mae = None
     checkpoint_saved = False
 
     for epoch in range(1, args.epochs + 1):
-        train_mae = train_one_epoch(model, train_loader, criterion, optimizer, device)
+        train_mae = train_one_epoch(
+            model,
+            train_loader,
+            criterion,
+            optimizer,
+            device,
+            log_every=args.log_every_batches,
+        )
 
         if val_loader is not None:
             val_mae = evaluate_mae(model, val_loader, criterion, device)
@@ -565,7 +730,15 @@ def main() -> None:
     metrics = compute_metrics(y_true, y_pred)
     save_predictions(output_paths["predictions"], y_true, y_pred)
     save_json(output_paths["metrics"], json_safe_metrics(metrics))
-    save_json(output_paths["run_config"], build_run_config(args, feature_columns, date_column))
+    save_json(
+        output_paths["run_config"],
+        build_run_config(
+            args=args,
+            feature_columns=feature_columns,
+            date_column=date_column,
+            has_validation=val_loader is not None,
+        ),
+    )
 
     print(f"Test MAE: {metrics['mae']:.6f}")
     print(f"Test RMSE: {metrics['rmse']:.6f}")

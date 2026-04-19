@@ -1,0 +1,43 @@
+{
+  "model": "xgboost",
+  "feature_columns": [
+    "gnss_latitude",
+    "gnss_longitude",
+    "odometry_articulationAngle",
+    "odometry_steeringAngle",
+    "odometry_vehicleSpeed",
+    "odometry_wheelSpeed_fl",
+    "odometry_wheelSpeed_fr",
+    "odometry_wheelSpeed_ml",
+    "odometry_wheelSpeed_mr",
+    "odometry_wheelSpeed_rl",
+    "odometry_wheelSpeed_rr",
+    "status_doorIsOpen",
+    "status_gridIsAvailable",
+    "status_haltBrakeIsActive",
+    "status_parkBrakeIsActive",
+    "temperature_ambient",
+    "traction_brakePressure",
+    "traction_tractionForce"
+  ],
+  "window_size": 10,
+  "target_column": "electric_powerDemand",
+  "date_column": "time_unix",
+  "train_years": [
+    2019,
+    2020,
+    2021
+  ],
+  "test_years": [
+    2022
+  ],
+  "n_estimators": 200,
+  "max_depth": 5,
+  "learning_rate": 0.05,
+  "subsample": 0.8,
+  "colsample_bytree": 0.8,
+  "reg_alpha": 0.0,
+  "reg_lambda": 1.0,
+  "random_state": 42,
+  "n_jobs": -1
+}

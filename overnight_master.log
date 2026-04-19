@@ -1,0 +1,13 @@
+==================================================
+Starting: top5_setcn_10ep
+Time: Sun Apr 19 04:25:37 EDT 2026
+Command: /Users/pranav/Projects/Professional/College/DS340W/SETCN/venv/bin/python train.py --model setcn --train_dir sampdata_sampled_top5/train --val_dir sampdata_sampled_top5/val --test_dir sampdata_sampled_top5/test --date_column time_unix --feature_columns traction_tractionForce odometry_vehicleSpeed odometry_wheelSpeed_fr odometry_wheelSpeed_ml odometry_wheelSpeed_mr --epochs 10 --batch_size 64 --lr 1e-4 --max_rows_per_trip 2000 --log_every_batches 500 --output_dir outputs/top5_setcn_10ep
+==================================================
+[OK] top5_setcn_10ep finished at Sun Apr 19 05:21:55 EDT 2026
+==================================================
+Starting: sparse2x_setcn_10ep
+Time: Sun Apr 19 05:21:55 EDT 2026
+Command: /Users/pranav/Projects/Professional/College/DS340W/SETCN/venv/bin/python train.py --model setcn --train_dir sampdata_sampled_2xs/train --val_dir sampdata_sampled_2xs/val --test_dir sampdata_sampled_2xs/test --date_column time_unix --epochs 10 --batch_size 64 --lr 1e-4 --max_rows_per_trip 2000 --log_every_batches 500 --output_dir outputs/sparse2x_setcn_10ep
+==================================================
+[OK] sparse2x_setcn_10ep finished at Sun Apr 19 06:00:53 EDT 2026
+All queued experiments finished at Sun Apr 19 06:00:53 EDT 2026
