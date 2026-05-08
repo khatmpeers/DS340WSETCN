@@ -21,13 +21,80 @@ The data is not directly stored in the repository due to the size of the directo
 
 There are broadly two kinds of scripts found here. The first are helper scripts, which were used to perform various supplementary tasks needed to complete the procedure. Unless you wish to start the procedure from scratch (i.e., processing the raw data), most of these scripts can be safely ignored. 
 
-The remaining scripts form the critical actions of this procedure. This includes the scripts that directly aided in generating and evaluating the models. More information about them can be found down below in the (**WHEN YOU NAME THE SECTION COME BACK AND ADD IT HERE**) section.
+The remaining scripts form the critical actions of this procedure. This includes the scripts that directly aided in generating and evaluating the models. More information about them can be found below in the **Procedure** section.
 
 ### Misc.
 
 The Logs and Documentation are less important for the procedure itself. Documentation, such as this *README.md,* mainly describes aspects of the project and other useful information that could assist users, as documentation typically does. While I did not include a large amount of documentation in this project, I believe the files I did include should be useful for navigating this repository without issue. On the other hand, the log files are mainly from my runs of the procedure. They're useful in case you wish to peruse my results for yourself, but serve little purpose outside that. 
 
 ## The Procedure
+
+This section explains how to set up this repository as a working project and carry out the procedure in a new environment. This will notably include splitting the raw data into valid partitions and training/testing the model on the variations I explored with this procedure. Below is a list of steps you can follow in order to achieve the same results.
+
+#### Hello
+
+### Prerequisite Technologies
+
+Please ensure that the environment has the following technologies.
+- git
+- Python (3.10)
+
+Additionally, `pyenv` is useful to have as well for easy Python version control, but it is not strictly necessary if you can directly obtain Python v3.10.
+
+### 1. Clone the Repository
+
+Enter a terminal or shell application in your preferred location or navigate there manually and paste the following command.
+
+```
+git clone https://github.com/khatmpeers/DS340WSETCN.git
+cd DS340WSETCN
+```
+
+### 2. Create the Python Environment (venv) in the repository
+
+This project specifically depends on Python v3.10. Verify that you have the correct Python version installed before continuing. If the current version isn't 3.10.X, then ensure that you create the environment with a v3.10.X interpreter.
+
+MacOS/Linux: 
+```
+python3.10 -m venv venv
+// or if using pyenv
+(pyenv install 3.10) // if not installed
+pyenv local 3.10
+python -m venv venv
+```
+
+Windows:
+```
+py -3.10 -m venv venv
+```
+
+### 3. Source the venv
+
+MacOS/Linux:
+```
+source venv/bin/activate
+```
+
+Windows:
+```
+venv\Scripts\activate
+```
+
+### 4. Install Dependencies
+
+```
+pip install -r requirements.txt
+```
+
+### 5. Download the dataset
+
+Download the set from:
+- [My OneDrive folder](https://pennstateoffice365-my.sharepoint.com/:f:/g/personal/lqp5348_psu_edu/IgCHQfHJlpGSQ66py_I2WLCmAfDRosxC6oSmETjOwGYOSFI?e=j8CXev)
+- [The ETH zürich research collection website](https://www.research-collection.ethz.ch/entities/researchdata/61ac2f6e-2ca9-4229-8242-aed3b0c0d47c)
+
+The full uncompressed folder should be roughly 8 GB. However, you can also install the pre-partitioned and reduced data that I used for my project from the OneDrive link.
+
+### 6. Run the baseline SE-TCN experiment
 
 
 
