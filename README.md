@@ -31,8 +31,6 @@ The Logs and Documentation are less important for the procedure itself. Document
 
 This section explains how to set up this repository as a working project and carry out the procedure in a new environment. This will notably include splitting the raw data into valid partitions and training/testing the model on the variations I explored with this procedure. Below is a list of steps you can follow in order to achieve the same results.
 
-#### Hello
-
 ### Prerequisite Technologies
 
 Please ensure that the environment has the following technologies.
