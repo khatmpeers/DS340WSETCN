@@ -1,6 +1,6 @@
 venv
 .venv
-data
+raw_data
 train_data
 __pycache__
 sampdata*
