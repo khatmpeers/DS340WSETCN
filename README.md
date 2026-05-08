@@ -93,7 +93,9 @@ Download the set titled "reduced_data" from:
 
 This is the partitioned and reduced dataset I used for my project. Relocate the "reduced_data" folder to the project repo. The commands below assume that the folder is in the same directory as `train.py` in the repository, but the scripts are written such that the path to the "reduced_data" and other inputs/outputs can be customized as script parameters. 
 
-### S. 
+### S. `execute_pipeline.py`
+
+You can optionally run the Python script `execute_pipeline.py` to automatically perform steps 6-8.
 
 ### 6. Train Surrogate XGBoost Model + SHAP Analysis
 
@@ -147,7 +149,7 @@ python helper_scripts/sparsity_splitter.py \
 ```
 
 
-### 6. Train the SE-TCN Models on the Datasets
+### 8. Train the SE-TCN Models on the Datasets
 
 Epochs can be reduced to test functionality.
 
@@ -227,7 +229,7 @@ python train.py \
   --output_dir outputs/top8_setcn_10ep
 ```
 
-### 7. Check Results
+### 9. Check Results
 
 Navigate to the "outputs" directory. Each subdirectory represents one of the five runs performed in step 6.
 
