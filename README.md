@@ -93,9 +93,9 @@ Download the set titled "reduced_data" from:
 
 This is the partitioned and reduced dataset I used for my project. Relocate the "reduced_data" folder to the project repo. The commands below assume that the folder is in the same directory as `train.py` in the repository, but the scripts are written such that the path to the "reduced_data" and other inputs/outputs can be customized as script parameters. 
 
-### 6. Train Surrogate XGBoost Model
+### S. 
 
-
+### 6. Train Surrogate XGBoost Model + SHAP Analysis
 
 ```
 python helper_scripts/train_xgboost.py \
@@ -106,7 +106,9 @@ python helper_scripts/train_xgboost.py \
   --output_dir outputs_xgboost
 ```
 
-### . Prepare dataset variants
+This script also performs the SHAP analysis and stores the results in the specified output directory (in this case, "outputs_xgboost"). 
+
+### 7. Prepare dataset variants
 
 Use `sparsity_splitter.py` and `feature_splitter.py` to prepare the dataset variants. 
 
@@ -145,7 +147,95 @@ python helper_scripts/sparsity_splitter.py \
 ```
 
 
-### 6. Run the baseline SE-TCN experiment
+### 6. Train the SE-TCN Models on the Datasets
+
+Epochs can be reduced to test functionality.
+
+Baseline
+```
+python train.py \
+  --model setcn \
+  --train_dir reduced_data/train \
+  --val_dir reduced_data/val \
+  --test_dir reduced_data/test \
+  --date_column time_unix \
+  --epochs 10 \
+  --batch_size 64 \
+  --lr 1e-4 \
+  --max_rows_per_trip 2000 \
+  --output_dir outputs/baseline_setcn_10ep
+```
+
+2x Sparsity
+```
+python train.py \
+  --model setcn \
+  --train_dir reduced_data_2x_sparsity/train \
+  --val_dir reduced_data_2x_sparsity/val \
+  --test_dir reduced_data_2x_sparsity/test \
+  --date_column time_unix \
+  --epochs 10 \
+  --batch_size 64 \
+  --lr 1e-4 \
+  --max_rows_per_trip 2000 \
+  --output_dir outputs/2x_sparsity_setcn_10ep
+```
+
+5x Sparsity
+```
+python train.py \
+  --model setcn \
+  --train_dir reduced_data_5x_sparsity/train \
+  --val_dir reduced_data_5x_sparsity/val \
+  --test_dir reduced_data_5x_sparsity/test \
+  --date_column time_unix \
+  --epochs 10 \
+  --batch_size 64 \
+  --lr 1e-4 \
+  --max_rows_per_trip 2000 \
+  --output_dir outputs/5x_sparsity_setcn_10ep
+```
 
 
+Top 5 Predictors
+```
+python train.py \
+  --model setcn \
+  --train_dir reduced_data_top5_predictors/train \
+  --val_dir reduced_data_top5_predictors/val \
+  --test_dir reduced_data_top5_predictors/test \
+  --date_column time_unix \
+  --epochs 10 \
+  --batch_size 64 \
+  --lr 1e-4 \
+  --max_rows_per_trip 2000 \
+  --output_dir outputs/top5_setcn_10ep
+```
+
+Top 8 Predictors
+```
+python train.py \
+  --model setcn \
+  --train_dir reduced_data_top8_predictors/train \
+  --val_dir reduced_data_top8_predictors/val \
+  --test_dir reduced_data_top8_predictors/test \
+  --date_column time_unix \
+  --epochs 10 \
+  --batch_size 64 \
+  --lr 1e-4 \
+  --max_rows_per_trip 2000 \
+  --output_dir outputs/top8_setcn_10ep
+```
+
+### 7. Check Results
+
+Navigate to the "outputs" directory. Each subdirectory represents one of the five runs performed in step 6.
+
+Each subdirectory contains the following:
+- best_model.pt
+- metrics.json
+- run_config.json
+- test_predictions.csv
+
+The main metrics of interest can be viewed in `metrics.json`.
 
