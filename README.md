@@ -88,11 +88,62 @@ pip install -r requirements.txt
 
 ### 5. Download the dataset
 
-Download the set from:
+Download the set titled "reduced_data" from:
 - [My OneDrive folder](https://pennstateoffice365-my.sharepoint.com/:f:/g/personal/lqp5348_psu_edu/IgCHQfHJlpGSQ66py_I2WLCmAfDRosxC6oSmETjOwGYOSFI?e=j8CXev)
-- [The ETH zürich research collection website](https://www.research-collection.ethz.ch/entities/researchdata/61ac2f6e-2ca9-4229-8242-aed3b0c0d47c)
 
-The full uncompressed folder should be roughly 8 GB. However, you can also install the pre-partitioned and reduced data that I used for my project from the OneDrive link.
+This is the partitioned and reduced dataset I used for my project. Relocate the "reduced_data" folder to the project repo. The commands below assume that the folder is in the same directory as `train.py` in the repository, but the scripts are written such that the path to the "reduced_data" and other inputs/outputs can be customized as script parameters. 
+
+### 6. Train Surrogate XGBoost Model
+
+
+
+```
+python helper_scripts/train_xgboost.py \
+  --data_path reduced_data \
+  --date_column time_unix \
+  --max_rows_per_trip 2000 \
+  --shap_sample_size 5000 \
+  --output_dir outputs_xgboost
+```
+
+### . Prepare dataset variants
+
+Use `sparsity_splitter.py` and `feature_splitter.py` to prepare the dataset variants. 
+
+Produce Top 5 Predictors Dataset
+```
+python helper_scripts/feature_splitter.py \
+  --input_root reduced_data \
+  --output_root reduced_data_top5_predictors \
+  --shap_csv outputs_xgboost/shap_feature_importance.csv \
+  --top_k 5
+```
+
+Produce Top 8 Predictors Dataset
+```
+python helper_scripts/feature_splitter.py \
+  --input_root reduced_data \
+  --output_root reduced_data_top8_predictors \
+  --shap_csv outputs_xgboost/shap_feature_importance.csv \
+  --top_k 5
+```
+
+Produce 2x Sparsity Dataset
+```
+python helper_scripts/sparsity_splitter.py \
+  --input_root reduced_data \
+  --output_root reduced_data_2x_sparsity \
+  --step 2
+```
+
+Produce 5x Sparsity Dataset
+```
+python helper_scripts/sparsity_splitter.py \
+  --input_root reduced_data \
+  --output_root reduced_data_2x_sparsity \
+  --step 5
+```
+
 
 ### 6. Run the baseline SE-TCN experiment
 
