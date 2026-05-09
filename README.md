@@ -95,6 +95,27 @@ This is the partitioned and reduced dataset I used for my project. Relocate the 
 
 You can optionally run the Python script `execute_pipeline.py` to automatically perform steps 6-8.
 
+You can specify script parameters to perform the procedure to optimize for what best suits your purposes. This command would run the script in a reduced capacity, allowing it to complete relatively quickly (about 11-12 minutes for me).
+```
+python execute_pipeline.py \
+  --epochs 1 \
+  --max_rows_per_trip 300 \
+  --shap_sample_size 500 \
+  --device cpu
+```
+
+#### Note: `train.py`
+
+The `train.py` script goes through a simple checklist to determine if it can run the procedure with better hardware. If nothing was detected or specified, it defaults to CPU. I left this checklist here in the event I was able to get access to improved hardware, but that didn't happen, so it's more of a convenience feature now. If you want to force the program to use something explicitly, add one of the following to the script call.
+
+```
+  --device cuda // uses default NVIDIA GPU
+  --device mps // uses the Apple Metal Backend for Apple Silicon Macs
+  --device cpu // explicitly specifies to the program to use the CPU.
+```
+
+I don't anticipate that explicitly changing the device should break anything. I was only able to test the CPU option, but the only thing that changes when something else is chosen is that PyTorch uses different hardware internally for its operations. Structurally, the procedure remains unchanged. However, if you run into any issues, I suggest using `--device cpu` in the script call, as that will bring the procedure closer to what I used in my project.
+
 ### 6. Train Surrogate XGBoost Model + SHAP Analysis
 
 ```
@@ -103,6 +124,7 @@ python helper_scripts/train_xgboost.py \
   --date_column time_unix \
   --max_rows_per_trip 2000 \
   --shap_sample_size 5000 \
+  --device cpu \
   --output_dir outputs_xgboost
 ```
 
@@ -118,6 +140,7 @@ python helper_scripts/feature_splitter.py \
   --input_root reduced_data \
   --output_root reduced_data_top5_predictors \
   --shap_csv outputs_xgboost/shap_feature_importance.csv \
+  --device cpu \
   --top_k 5
 ```
 
@@ -127,6 +150,7 @@ python helper_scripts/feature_splitter.py \
   --input_root reduced_data \
   --output_root reduced_data_top8_predictors \
   --shap_csv outputs_xgboost/shap_feature_importance.csv \
+  --device cpu \
   --top_k 5
 ```
 
@@ -135,6 +159,7 @@ Produce 2x Sparsity Dataset
 python helper_scripts/sparsity_splitter.py \
   --input_root reduced_data \
   --output_root reduced_data_2x_sparsity \
+  --device cpu \
   --step 2
 ```
 
@@ -143,6 +168,7 @@ Produce 5x Sparsity Dataset
 python helper_scripts/sparsity_splitter.py \
   --input_root reduced_data \
   --output_root reduced_data_2x_sparsity \
+  --device cpu \
   --step 5
 ```
 
@@ -178,6 +204,7 @@ python train.py \
   --batch_size 64 \
   --lr 1e-4 \
   --max_rows_per_trip 2000 \
+  --device cpu \
   --output_dir outputs/2x_sparsity_setcn_10ep
 ```
 
@@ -193,6 +220,7 @@ python train.py \
   --batch_size 64 \
   --lr 1e-4 \
   --max_rows_per_trip 2000 \
+  --device cpu \
   --output_dir outputs/5x_sparsity_setcn_10ep
 ```
 
@@ -209,6 +237,7 @@ python train.py \
   --batch_size 64 \
   --lr 1e-4 \
   --max_rows_per_trip 2000 \
+  --device cpu \
   --output_dir outputs/top5_setcn_10ep
 ```
 
@@ -224,6 +253,7 @@ python train.py \
   --batch_size 64 \
   --lr 1e-4 \
   --max_rows_per_trip 2000 \
+  --device cpu \
   --output_dir outputs/top8_setcn_10ep
 ```
 
