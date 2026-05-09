@@ -4,3 +4,4 @@ raw_data
 train_data
 __pycache__
 reduced_data*
+outputs*
