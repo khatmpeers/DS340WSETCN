@@ -3,4 +3,4 @@ venv
 raw_data
 train_data
 __pycache__
-sampdata*
+reduced_data*
